@@ -12,6 +12,9 @@ public abstract class Instance<T extends Enum<?>> {
 	 * Missing attributes should be null.*/
 	public abstract Iterator<Object> getAttributes();
 	
+	/** Initialize the instance given this set of serialized values. For use by loaders. */
+	public abstract void initialize(String[] values);
+	
 	public T getClassification(){
 		return classification;
 	}
