@@ -13,7 +13,7 @@ import adaboost.instance.GlassInstance;
 
 public class CSVLoaderTest {
 
-	private static final double DELTA = 0.001d;
+	private static final double DELTA = 0.0001d;
 
 	@Test
 	public void testLoad() throws InstantiationException, IllegalAccessException, IOException {
