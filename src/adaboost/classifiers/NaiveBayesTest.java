@@ -29,15 +29,10 @@ public class NaiveBayesTest {
 
 	@Test
 	public void testClassify() {
+		classifier.train(instances);
 		Instance<GlassEnum> temp = instances.iterator().next();
 		GlassEnum correct = temp.getClassification();
 		assertEquals(correct, classifier.classify(temp));
-	}
-
-	@Test
-	public void testTrain() {
-		classifier.train(instances);
-		
 	}
 
 }
