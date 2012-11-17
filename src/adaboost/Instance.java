@@ -24,7 +24,7 @@ public abstract class Instance<T extends Enum<?>> {
 	}
 
 	public void setWeight(double weight) {
-		this.weight = weight;
+		this.weight = (weight < 0 ? 0 : (weight > 1 ? 1 : weight));
 	}
 	
 }

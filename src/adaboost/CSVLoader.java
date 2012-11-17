@@ -18,7 +18,9 @@ public class CSVLoader {
 		//Check existence and readability of data source
 		String location = props.getProperty(DATA_SOURCE_PROPERTY);
 		File source = new File(location);
-		if(!(source.exists() && source.canRead())){
+		boolean ex = source.exists();
+		boolean rd = source.canRead();
+		if(!(ex && rd)){
 			throw new RuntimeException("Unable to read data source at " + location + ".");
 		}
 		//Prepare for instantiation of appropriate instance class.
