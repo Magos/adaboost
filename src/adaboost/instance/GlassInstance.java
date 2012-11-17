@@ -3,7 +3,7 @@ package adaboost.instance;
 import java.util.Iterator;
 
 import adaboost.Instance;
-
+/** An Instance class for the Glass dataset.*/
 public class GlassInstance extends Instance<GlassEnum> {
 	private double[] values;
 	
