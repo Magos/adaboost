@@ -5,17 +5,41 @@ import java.util.Iterator;
 import adaboost.Instance;
 
 public class GlassInstance extends Instance<GlassEnum> {
+	private double[] values;
+	
+	public GlassInstance(){
+		values = new double[8];
+	}
 
 	@Override
 	public Iterator<Object> getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<Object>() {
+			private int i;
+
+			@Override
+			public boolean hasNext() {
+				return i < values.length;
+			}
+
+			@Override
+			public Object next() {
+				return values[i++];
+			}
+
+			@Override
+			public void remove() {
+				//Non-removing implementation.
+			}
+			
+		};
 	}
 
 	@Override
 	public void initialize(String[] values) {
-		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < this.values.length; i++) {
+			this.values[i] = Double.parseDouble(values[i]);
+		}
+		this.classification = GlassEnum.fromString(values[values.length-1]);
 	}
 
 }

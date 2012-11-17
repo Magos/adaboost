@@ -14,7 +14,7 @@ public class CSVLoader {
 	public static final String DATA_SOURCE_PROPERTY = "adaboost.dataSource";
 	public static final String DATA_SOURCE_CLASS = "adaboost.dataClass";
 
-	public static <T extends Enum> Set<Instance<T>> load(Properties props) throws IOException, InstantiationException, IllegalAccessException{
+	public static <T extends Enum<?>> Set<Instance<T>> load(Properties props) throws IOException, InstantiationException, IllegalAccessException{
 		//Check existence and readability of data source
 		String location = props.getProperty(DATA_SOURCE_PROPERTY);
 		File source = new File(location);
@@ -26,7 +26,7 @@ public class CSVLoader {
 		try {
 			instanceClass = (Class<? extends Instance<T>>) Class.forName(props.getProperty(DATA_SOURCE_CLASS)) ;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Unable to load requested instance class.",e);
 		}
 		//Start loading.
 		Set<Instance<T>> ret = new HashSet<Instance<T>>();
@@ -37,6 +37,10 @@ public class CSVLoader {
 			Instance<T> instance = instanceClass.newInstance();
 			instance.initialize(values);
 			ret.add(instance);
+		}
+		double weight = 1d / ret.size();
+		for (Instance<T> instance : ret) {
+			instance.setWeight(weight);
 		}
 		return ret;
 	}

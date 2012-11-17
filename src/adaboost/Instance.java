@@ -5,7 +5,7 @@ import java.util.Iterator;
 /** An instance of a classification problem, templated with the problems class. */
 public abstract class Instance<T extends Enum<?>> {
 	private double weight;
-	private T classification;
+	protected T classification;
 	
 	/** Get an iterator over the attributes of the instance.
 	 * Within a data set, every instance must provide iterators that use the same ordering of attributes.
