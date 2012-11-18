@@ -1,7 +1,13 @@
 package adaboost.instance;
 
 public enum GlassEnum {
-	One, Two, Three, Four, Five, Six, Seven;
+	One, 
+	Two, 
+	Three, 
+//	Four, //Not actually present in Glass set.
+	Five, 
+	Six, 
+	Seven;
 
 	public static GlassEnum fromString(String s){
 		switch(s){
@@ -11,8 +17,8 @@ public enum GlassEnum {
 			return Two;
 		case "3":
 			return Three;
-		case "4":
-			return Four;
+//		case "4":
+//			return Four;
 		case "5":
 			return Five;
 		case "6":
