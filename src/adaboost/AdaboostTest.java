@@ -47,5 +47,10 @@ public class AdaboostTest {
 	public void testMain(){
 		Adaboost.main(TEST_ARGS);
 	}
+	
+	@Test (expected = RuntimeException.class)
+	public void testMainEmpty(){
+		Adaboost.main(new String[0]);
+	}
 
 }

@@ -3,7 +3,6 @@ package adaboost;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 /** The object responsible for the boosting algorithm itself,
@@ -12,33 +11,30 @@ public class Adaboost {
 
 	/** A prefix for adaboost-related properties. */
 	public static final String NAMESPACE = "adaboost.";
+	/** Part of several property keys.*/
+	private static final String COUNT = "count";
+	private static final String CLASSIFIERS_NS = NAMESPACE + "classifiers.";
 	/** How many different classes of classifiers should this run contain?*/
-	private static final String CLASSIFIERS_COUNT = NAMESPACE + "classifiers.count";
+	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
 
 	public static void main(String[] args) {
 		if(args.length != 1){
-			System.err.println("Please give a properties file argument.");
-			System.exit(1);
+			throw new RuntimeException("Please give a properties file argument.");
 		}
 		
 		Properties props = null;
 		try {
 			props = loadProperties(args);
 		} catch (IOException e1) {
-			System.err.println("Could not read properties file.");
-			e1.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Could not read properties file.", e1);
 		}
-		
 		Set<Instance<Enum<?>>> dataSet = null;
 		try {
 			dataSet = CSVLoader.load(props);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
-			System.err.println("Error while loading data set.");
-			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Error while loading data set.",e);
 		}
 		Set<Instance<Enum<?>>> trainingSet = new HashSet<Instance<Enum<?>>>();
 		Set<Instance<Enum<?>>> testingSet = new HashSet<Instance<Enum<?>>>();
@@ -49,7 +45,9 @@ public class Adaboost {
 
 		int classifierCount = Integer.parseInt((String) props.get(CLASSIFIERS_COUNT));
 		for (int i = 0; i < classifierCount; i++) {
-
+			int count = props.getIntProperty(CLASSIFIERS_NS + i + "." + COUNT);
+			
+			
 		}
 
 
@@ -57,7 +55,7 @@ public class Adaboost {
 
 	/** Non-destructively partition a data set into training and testing sets based on property values.
 	 * Attempts to sample the test data evenly from throughout the data set, to ensure it is representative.
-	 * @param dataSet The data-set to be partitioned. It will still contain all its instances.
+	 * @param dataSet The data-set to be partitioned. No alterations are performed on this set.
 	 * @param trainingSet The training set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
 	 * @param testingSet The testing set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
 	 *@param  proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
