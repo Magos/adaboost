@@ -42,4 +42,9 @@ public class GlassInstance extends Instance<GlassEnum> {
 		this.classification = GlassEnum.fromString(values[values.length-1]);
 	}
 
+	@Override
+	public Class<? extends Enum> getClassEnum() {
+		return GlassEnum.class;
+	}
+
 }

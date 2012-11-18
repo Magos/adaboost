@@ -15,6 +15,8 @@ public abstract class Instance<T extends Enum<?>> {
 	/** Initialize the instance given this set of serialized values. For use by loaders. */
 	public abstract void initialize(String[] values);
 	
+	public abstract Class<? extends Enum> getClassEnum();
+	
 	public T getClassification(){
 		return classification;
 	}

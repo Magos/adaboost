@@ -43,4 +43,9 @@ public class NurseryInstance extends Instance<NurseryEnum> {
 		this.classification = NurseryEnum.fromString(values[values.length-1]);
 	}
 
+	@Override
+	public Class<? extends Enum> getClassEnum() {
+		return NurseryEnum.class;
+	}
+
 }

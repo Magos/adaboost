@@ -38,15 +38,31 @@ public class Adaboost {
 		}
 		Set<Instance<Enum<?>>> trainingSet = new HashSet<Instance<Enum<?>>>();
 		Set<Instance<Enum<?>>> testingSet = new HashSet<Instance<Enum<?>>>();
-		double proportion = Double.parseDouble((String) props.get(TEST_SET_PROPORTION));
+		double proportion = props.getDoubleProperty(TEST_SET_PROPORTION);
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
+		Class<? extends Enum> targetClasses = dataSet.iterator().next().getClassEnum();
 
-
-		int classifierCount = Integer.parseInt((String) props.get(CLASSIFIERS_COUNT));
+		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
 		for (int i = 0; i < classifierCount; i++) {
-			int count = props.getIntProperty(CLASSIFIERS_NS + i + "." + COUNT);
-			
+			String prefix = CLASSIFIERS_NS + i + ".";
+			Class<? extends Classifier<?>> classifier = null;
+			String className = props.getProperty(prefix + "class");
+			try {
+				classifier = (Class<? extends Classifier<?>>) Class.forName(className);
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException("Unable to load classifier " + className,e);
+			}
+			int count = props.getIntProperty(prefix + COUNT);
+			for (int j = 0; j < count; j++) {
+				Classifier<?> x = null;
+				try {
+					 x = classifier.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				x.configure(props, prefix);
+			}
 			
 		}
 

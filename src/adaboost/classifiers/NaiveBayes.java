@@ -8,6 +8,7 @@ import java.util.Set;
 
 import adaboost.Classifier;
 import adaboost.Instance;
+import adaboost.Properties;
 
 public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	private Map<T,Double> aPrioriProbability;
@@ -41,6 +42,10 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 			group.setValue(d);
 		}
 		aPrioriProbability = new EnumMap<T,Double>(temp);
- 
+	}
+
+	@Override
+	public void configure(Properties props, String prefix) {
+		
 	}
 }
