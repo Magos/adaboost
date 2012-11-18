@@ -11,7 +11,10 @@ import adaboost.Instance;
 import adaboost.Properties;
 
 public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
-	private Map<T,Double> aPrioriProbability;
+	/** The a priori probability that an unseen instance will belong to a class. */
+	private Map<T,Double> aPriori;
+	/** The probability that an instance of a given class has these particular attributes. */
+	private Map<ValueClassPair,Double> aPosteriori;
 	private Set<Instance<Enum<?>>> trainingSet;
 
 	@Override
@@ -26,9 +29,7 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	public void train(Set<Instance<Enum<?>>> trainingSet) {
 		this.trainingSet = trainingSet;
 		//For naive bayes we need to obtain two probabilities by counting:
-		//Weighted probability that any instance belongs to a classification, and
-		//weighted probability that a set of attributes correspond to a classification.
-		//Obtain the former at train-time, find the latter on request.
+		//Weighted probability that any instance belongs to a classification:
 		Map<T,Double> temp = new HashMap<T,Double>();
 		double totalWeight = 0;
 		for (Instance<Enum<?>> instance : trainingSet) {
@@ -41,11 +42,34 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 			Double d = group.getValue() / totalWeight;
 			group.setValue(d);
 		}
-		aPrioriProbability = new EnumMap<T,Double>(temp);
+		aPriori = new EnumMap<T,Double>(temp);
+		//Weighted probability of any attribute value, given a classification.
+		
 	}
 
 	@Override
 	public void configure(Properties props, String prefix) {
 		
+	}
+	
+	private class ValueClassPair{
+		int position = 0;
+		Object attribute;
+		T classification;
+		
+		@Override
+		public int hashCode() {
+			return position + attribute.hashCode() + classification.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof NaiveBayes.ValueClassPair){
+				ValueClassPair other = (ValueClassPair) obj;
+				return position == other.position &&
+						attribute.equals(other.attribute) &&
+						classification == other.classification;
+			}else return false;
+		}
 	}
 }
