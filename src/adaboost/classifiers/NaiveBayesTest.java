@@ -1,8 +1,7 @@
 package adaboost.classifiers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Set;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import adaboost.CSVLoader;
 import adaboost.Instance;
 import adaboost.instance.GlassEnum;
-import adaboost.instance.GlassInstance;
 
 public class NaiveBayesTest {
 	private Set<Instance<GlassEnum>> instances;

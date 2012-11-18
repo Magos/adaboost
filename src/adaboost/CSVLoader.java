@@ -11,8 +11,8 @@ import java.util.Set;
 
 public class CSVLoader {
 	private static final String SEPARATOR = ",";
-	public static final String DATA_SOURCE_PROPERTY = "adaboost.dataSource";
-	public static final String DATA_SOURCE_CLASS = "adaboost.dataClass";
+	public static final String DATA_SOURCE_PROPERTY = Adaboost.NAMESPACE + "dataSource";
+	public static final String DATA_SOURCE_CLASS = Adaboost.NAMESPACE + "dataClass";
 
 	public static <T extends Enum<?>> Set<Instance<T>> load(Properties props) throws IOException, InstantiationException, IllegalAccessException{
 		//Check existence and readability of data source
