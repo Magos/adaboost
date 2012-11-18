@@ -44,7 +44,7 @@ public class NurseryInstance extends Instance<NurseryEnum> {
 	}
 
 	@Override
-	public Class<? extends Enum> getClassEnum() {
+	public Class<? extends Enum<?>> getClassEnum() {
 		return NurseryEnum.class;
 	}
 

@@ -43,7 +43,7 @@ public class GlassInstance extends Instance<GlassEnum> {
 	}
 
 	@Override
-	public Class<? extends Enum> getClassEnum() {
+	public Class<? extends Enum<?>> getClassEnum() {
 		return GlassEnum.class;
 	}
 

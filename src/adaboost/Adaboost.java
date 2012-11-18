@@ -23,7 +23,7 @@ public class Adaboost {
 		if(args.length != 1){
 			throw new RuntimeException("Please give a properties file argument.");
 		}
-		
+
 		Properties props = null;
 		try {
 			props = loadProperties(args);
@@ -41,9 +41,15 @@ public class Adaboost {
 		double proportion = props.getDoubleProperty(TEST_SET_PROPORTION);
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
-		Class<? extends Enum> targetClasses = dataSet.iterator().next().getClassEnum();
+		Class<? extends Enum<?>> targetClasses = dataSet.iterator().next().getClassEnum();
+		Set<Classifier<?>> classifiers = adaBoostTraining(props, trainingSet);
+
+	}
+
+	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
+	private static Set<Classifier<?>> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
 		Set<Classifier<?>> classifiers = new HashSet<Classifier<?>>();
-		
+
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
 		for (int i = 0; i < classifierCount; i++) {
 			String prefix = CLASSIFIERS_NS + i + ".";
@@ -56,18 +62,21 @@ public class Adaboost {
 			}
 			int count = props.getIntProperty(prefix + COUNT);
 			for (int j = 0; j < count; j++) {
-				Classifier<?> x = null;
-				try {
-					 x = classifier.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
+				boolean accepted = false;
+				while(!accepted){
+					Classifier<?> x = null;
+					try {
+						x = classifier.newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					x.configure(props, prefix);
+					x.train(trainingSet);
+					accepted = updateWeights(x,trainingSet);
 				}
-				x.configure(props, prefix);
-				x.train(trainingSet);
-				updateWeights(x,trainingSet);
 			}
-			
 		}
+		return classifiers;
 
 
 	}
@@ -93,7 +102,7 @@ public class Adaboost {
 		assert trainingSet != null && 	trainingSet.size() == 0;
 		assert testingSet != null && 	testingSet.size() == 0;
 		assert proportion >= 0 && proportion <= 1; 
-		
+
 		int testingCount = (int) Math.floor(proportion*dataSet.size());
 		int skipCount = dataSet.size() / testingCount;
 		int i = 0;
