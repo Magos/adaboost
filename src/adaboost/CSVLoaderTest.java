@@ -16,7 +16,7 @@ public class CSVLoaderTest {
 
 	private static final double DELTA = 0.0001d;
 
-	@Test
+	@Test 
 	public void testLoad() throws InstantiationException, IllegalAccessException, IOException {
 		Properties props = new Properties();
 		props.put(CSVLoader.DATA_SOURCE_PROPERTY, "res/glass.csv");
@@ -27,7 +27,21 @@ public class CSVLoaderTest {
 		for (Instance<GlassEnum> instance : instances) {
 			assertEquals("Freshly loaded instances should be weighted equally.",instance.getWeight(),expectedWeight,DELTA);
 		}
-		
+	}
+	
+	@Test (expected = RuntimeException.class)
+	public void testUnavailableFile() throws InstantiationException, IllegalAccessException, IOException{
+		Properties props = new Properties();
+		props.put(CSVLoader.DATA_SOURCE_PROPERTY, "nonexistentFile.csv");
+		props.put(CSVLoader.DATA_SOURCE_CLASS, GlassInstance.class.getCanonicalName());
+		CSVLoader.load(props);
 	}
 
+	@Test (expected = RuntimeException.class)
+	public void testUnavailableClass() throws InstantiationException, IllegalAccessException, IOException{
+		Properties props = new Properties();
+		props.put(CSVLoader.DATA_SOURCE_PROPERTY, "res/glass.csv");
+		props.put(CSVLoader.DATA_SOURCE_CLASS, "adaboost.classifiers.NonExistentClass");
+		CSVLoader.load(props);
+	}
 }

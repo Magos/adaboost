@@ -2,6 +2,7 @@ package adaboost;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -21,7 +22,16 @@ public class Adaboost {
 			System.err.println("Please give a properties file argument.");
 			System.exit(1);
 		}
-		Properties props = loadProperties(args);
+		
+		Properties props = null;
+		try {
+			props = loadProperties(args);
+		} catch (IOException e1) {
+			System.err.println("Could not read properties file.");
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
 		Set<Instance<Enum<?>>> dataSet = null;
 		try {
 			dataSet = CSVLoader.load(props);
@@ -30,18 +40,18 @@ public class Adaboost {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		Set<Instance<Enum<?>>> trainingSet = null;
-		Set<Instance<Enum<?>>> testingSet = null;
+		Set<Instance<Enum<?>>> trainingSet = new HashSet<Instance<Enum<?>>>();
+		Set<Instance<Enum<?>>> testingSet = new HashSet<Instance<Enum<?>>>();
 		double proportion = Double.parseDouble((String) props.get(TEST_SET_PROPORTION));
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
-		
-		
+
+
 		int classifierCount = Integer.parseInt((String) props.get(CLASSIFIERS_COUNT));
 		for (int i = 0; i < classifierCount; i++) {
-			
+
 		}
-		
+
 
 	}
 
@@ -52,7 +62,7 @@ public class Adaboost {
 	 * testingSet The testing set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
 	 * proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
 	 * */
-	private static void partitionDataSet(Set<Instance<Enum<?>>> dataSet,
+	static void partitionDataSet(Set<Instance<Enum<?>>> dataSet,
 			Set<Instance<Enum<?>>> trainingSet,
 			Set<Instance<Enum<?>>> testingSet, double proportion) {
 		assert dataSet.size() > 0;
@@ -70,16 +80,11 @@ public class Adaboost {
 		}
 	}
 
-	private static Properties loadProperties(String[] args) {
+	static Properties loadProperties(String[] args) throws IOException{
 		Properties props = new Properties();
-		try {
-			FileInputStream stream = new FileInputStream(args[0]);
-			props.load(stream);
-			stream.close();
-		} catch (IOException e) {
-			System.err.println("Error reading properties");
-			e.printStackTrace();
-		}
+		FileInputStream stream = new FileInputStream(args[0]);
+		props.load(stream);
+		stream.close();
 		return props;
 	}
 
