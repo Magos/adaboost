@@ -14,7 +14,7 @@ import adaboost.Instance;
 import adaboost.instance.GlassEnum;
 
 public class NaiveBayesTest {
-	private Set<Instance<GlassEnum>> instances;
+	private Set<Instance<Enum<?>>> instances;
 	private NaiveBayes<GlassEnum> classifier;
 	
 	@Before
@@ -28,8 +28,8 @@ public class NaiveBayesTest {
 	@Test
 	public void testClassify() {
 		classifier.train(instances);
-		Instance<GlassEnum> temp = instances.iterator().next();
-		GlassEnum correct = temp.getClassification();
+		Instance<Enum<?>> temp = instances.iterator().next();
+		GlassEnum correct = (GlassEnum) temp.getClassification();
 		assertEquals(correct, classifier.classify(temp));
 	}
 

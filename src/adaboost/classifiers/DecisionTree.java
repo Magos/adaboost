@@ -9,13 +9,13 @@ import adaboost.Properties;
 public class DecisionTree<T extends Enum<T>> implements Classifier<T> {
 
 	@Override
-	public T classify(Instance<T> instance) {
+	public T classify(Instance<Enum<?>> instance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void train(Set<Instance<T>> trainingset) {
+	public void train(Set<Instance<Enum<?>>> trainingset) {
 		// TODO Auto-generated method stub
 
 	}

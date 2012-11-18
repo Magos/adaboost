@@ -42,7 +42,8 @@ public class Adaboost {
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
 		Class<? extends Enum> targetClasses = dataSet.iterator().next().getClassEnum();
-
+		Set<Classifier<?>> classifiers = new HashSet<Classifier<?>>();
+		
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
 		for (int i = 0; i < classifierCount; i++) {
 			String prefix = CLASSIFIERS_NS + i + ".";
@@ -62,11 +63,20 @@ public class Adaboost {
 					e.printStackTrace();
 				}
 				x.configure(props, prefix);
+				x.train(trainingSet);
+				updateWeights(x,trainingSet);
 			}
 			
 		}
 
 
+	}
+
+	/** Update the weights of trainingSet to reflect the performance of the given classifier, returning whether or not the classifier performs acceptably.*/
+	private static boolean updateWeights(Classifier<?> x,
+			Set<Instance<Enum<?>>> trainingSet) {
+		//TODO: Implement
+		return true;		
 	}
 
 	/** Non-destructively partition a data set into training and testing sets based on property values.
