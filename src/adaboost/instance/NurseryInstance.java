@@ -6,10 +6,10 @@ import adaboost.Instance;
 
 /** An Instance class for the Glass dataset.*/
 public class NurseryInstance extends Instance<NurseryEnum> {
-	private double[] values;
+	private int[] values;
 	
 	public NurseryInstance(){
-		values = new double[8];
+		values = new int[8];
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class NurseryInstance extends Instance<NurseryEnum> {
 	@Override
 	public void initialize(String[] values) {
 		for (int i = 0; i < this.values.length; i++) {
-			this.values[i] = Double.parseDouble(values[i]);
+			this.values[i] = Integer.parseInt(values[i]);
 		}
 		this.classification = NurseryEnum.fromString(values[values.length-1]);
 	}
