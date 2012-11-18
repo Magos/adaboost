@@ -56,18 +56,20 @@ public class Adaboost {
 	}
 
 	/** Non-destructively partition a data set into training and testing sets based on property values.
-	 * @param
-	 * dataSet The data-set to be partitioned. It will still contain all its instances.
-	 * trainingSet The training set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
-	 * testingSet The testing set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
-	 * proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
+	 * Attempts to sample the test data evenly from throughout the data set, to ensure it is representative.
+	 * @param dataSet The data-set to be partitioned. It will still contain all its instances.
+	 * @param trainingSet The training set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
+	 * @param testingSet The testing set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
+	 *@param  proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
 	 * */
 	static void partitionDataSet(Set<Instance<Enum<?>>> dataSet,
 			Set<Instance<Enum<?>>> trainingSet,
 			Set<Instance<Enum<?>>> testingSet, double proportion) {
-		assert dataSet.size() > 0;
-		assert trainingSet.size() == 0;
-		assert testingSet.size() == 0;
+		assert dataSet != null && 		dataSet.size() > 0;
+		assert trainingSet != null && 	trainingSet.size() == 0;
+		assert testingSet != null && 	testingSet.size() == 0;
+		assert proportion >= 0 && proportion <= 1; 
+		
 		int testingCount = (int) Math.floor(proportion*dataSet.size());
 		int skipCount = dataSet.size() / testingCount;
 		int i = 0;
