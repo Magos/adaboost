@@ -88,12 +88,12 @@ public class Adaboost {
 		return true;		
 	}
 
-	/** Non-destructively partition a data set into training and testing sets based on property values.
+	/** Non-destructively partition a data set into training and testing sets.
 	 * Attempts to sample the test data evenly from throughout the data set, to ensure it is representative.
 	 * @param dataSet The data-set to be partitioned. No alterations are performed on this set.
 	 * @param trainingSet The training set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
 	 * @param testingSet The testing set to fill. Must be an empty set at start. Afterward will be a proper subset of dataSet.
-	 *@param  proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
+	 * @param  proportion The proportion of data to put into the testing set. Real value in [0,1], traditionally smaller than 0.5
 	 * */
 	static void partitionDataSet(Set<Instance<Enum<?>>> dataSet,
 			Set<Instance<Enum<?>>> trainingSet,

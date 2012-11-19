@@ -61,6 +61,12 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 			
 		}
 		//Preprocess to identify attribute ranges and create discretization scheme.
+		int attributeCount = 0;
+		Iterator<Object> attributes = trainingSet.iterator().next().getAttributes();
+		while(attributes.hasNext()){
+			attributeCount++;
+			attributes.next();
+		}
 		
 		//For each per-class set, count instances of each discrete attribute value.
 		for (Entry<T, Set<Instance<Enum<?>>>> group : partition.entrySet()) {
