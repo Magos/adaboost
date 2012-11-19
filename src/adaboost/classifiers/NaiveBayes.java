@@ -17,7 +17,6 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	private Map<T,Double> aPriori;
 	/** The probability that an instance of a given class has these particular attributes. */
 	private Map<ValueClassPair,Double> aPosteriori;
-	private Set<Instance<Enum<?>>> trainingSet;
 	private static int binCount;
 	/** Mappers for translating real-valued attributes into ints. */
 	private Map<Integer,Mapper> mappers = new HashMap<Integer,Mapper>();
@@ -25,16 +24,14 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public T classify(Instance<Enum<?>> instance) {
-		if(trainingSet.contains(instance)){
-			return (T) instance.getClassification();
-		}
+		ValueClassPair key = new ValueClassPair();
+		
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void train(Set<Instance<Enum<?>>> trainingSet) {
-		this.trainingSet = trainingSet;
 		//For naive bayes we need to obtain two probabilities by counting:
 		//Weighted probability that any instance belongs to a classification:
 		Map<T,Double> temp = new HashMap<T,Double>();
@@ -64,13 +61,45 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 		}
 		//Preprocess to identify attribute ranges and create discretization scheme.
 		preprocess(trainingSet);
-		//For each per-class set, count instances of each discrete attribute value.
+		//For each per-class set, count instances of each attribute value and tabulate probabilities.
+		aPosteriori = new HashMap<ValueClassPair,Double>();
 		for (Entry<T, Set<Instance<Enum<?>>>> group : partition.entrySet()) {
 			T classification = group.getKey();
-			
+			double totalClassWeight = 0;
+			Map<ValueClassPair,Double> tempMap = new HashMap<ValueClassPair,Double>();
+			//Make counts.
 			for (Instance<Enum<?>> instance : group.getValue()) {
-				
+				int attribute = 0;
+				for (Iterator<Object> it = instance.getAttributes(); it.hasNext();) {
+					Object next = it.next();
+					attribute++;
+					double instanceWeight = instance.getWeight();
+					totalClassWeight += instanceWeight;
+
+					ValueClassPair vcPair = new ValueClassPair();
+					vcPair.attribute = attribute;
+					vcPair.classification = classification;
+					
+					if(next instanceof Double){
+						vcPair.attribute = mappers.get(attribute).map((double) next);
+					}else{
+						vcPair.attribute = (int) next;
+					}
+					
+					if(tempMap.containsKey(vcPair)){
+						double updated = tempMap.get(vcPair) + instanceWeight;
+						tempMap.put(vcPair,updated);
+					}else{
+						tempMap.put(vcPair,instanceWeight);
+					}
+				}
 			}
+			//Produce probabilities from counts.
+			for (Entry<ValueClassPair,Double> entry : tempMap.entrySet()) {
+				entry.setValue(entry.getValue() / totalClassWeight);
+			}
+			//Update permanent storage.
+			aPosteriori.putAll(tempMap);
 		}
 	}
 
@@ -108,12 +137,12 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	/** A collection class for holding the information needed to look up an attribute probability.*/
 	private class ValueClassPair{
 		int position = 0;
-		Object attribute;
+		int attribute;
 		T classification;
 		
 		@Override
 		public int hashCode() {
-			return position + attribute.hashCode() + classification.hashCode();
+			return position + 31*attribute + classification.hashCode();
 		}
 		
 		@Override
@@ -121,9 +150,14 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 			if(obj instanceof NaiveBayes.ValueClassPair){
 				ValueClassPair other = (ValueClassPair) obj;
 				return position == other.position &&
-						attribute.equals(other.attribute) &&
+						attribute == other.attribute &&
 						classification == other.classification;
 			}else return false;
+		}
+		
+		@Override
+		public String toString() {
+			return "position " + position + " attribute "  + attribute + " class " + classification;
 		}
 	}
 	
