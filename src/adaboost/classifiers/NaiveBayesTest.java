@@ -1,5 +1,6 @@
 package adaboost.classifiers;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
@@ -30,9 +31,13 @@ public class NaiveBayesTest {
 	@Test
 	public void testClassify() {
 		classifier.train(instances);
-		Instance<Enum<?>> temp = instances.iterator().next();
-		GlassEnum correct = (GlassEnum) temp.getClassification();
-		assertEquals(correct, classifier.classify(temp));
+		int correctAmount = 0;
+		for (Instance<Enum<?>> instance : instances) {
+			GlassEnum correct = (GlassEnum) instance.getClassification();
+			correctAmount += (correct == classifier.classify(instance) ? 1 : 0);
+		}
+		double correctProportion = (((double)correctAmount )/ ((double)instances.size()));
+		assertTrue("Proportion correctly classified : " + correctProportion,correctProportion > 0.5d);
 	}
 
 }
