@@ -53,17 +53,20 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 			for (Enum<?> classification : observedTs) {
 				vc.classification = (T) classification;
 				double update = probabilities.get(classification);
-				double attrProb = (aPosteriori.containsKey(vc) ? aPosteriori.get(vc) : 0d); //Assume any not previously observed have 0 probability.
-				update *= attrProb;
+				if(aPosteriori.containsKey(vc)){
+					update *= aPosteriori.get(vc);
+				}else{//Assume any non-observed combinations have 0 probability.
+					update *= 0;
+				}
 				probabilities.put((T) classification,update);
 			}
 		}
 		//Find the most likely class and return it.
-		double min = 0d;
+		double max = 0d;
 		T ret = null;
 		for (Map.Entry<T, Double> entry : probabilities.entrySet()) {
-			if(entry.getValue() > min){
-				min = entry.getValue();
+			if(entry.getValue() > max){
+				max = entry.getValue();
 				ret = entry.getKey();
 			}
 		}
