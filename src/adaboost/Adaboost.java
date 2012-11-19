@@ -2,7 +2,10 @@ package adaboost;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /** The object responsible for the boosting algorithm itself,
@@ -18,6 +21,7 @@ public class Adaboost {
 	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
+	private static final double BETA = 1.5d;
 
 	public static void main(String[] args) {
 		if(args.length != 1){
@@ -41,13 +45,13 @@ public class Adaboost {
 		double proportion = props.getDoubleProperty(TEST_SET_PROPORTION);
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
-		Set<Classifier<?>> classifiers = adaBoostTraining(props, trainingSet);
+		Map<Classifier<?>,Double> ensemble = adaBoostTraining(props, trainingSet);
 		
 	}
 
 	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
-	private static Set<Classifier<?>> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
-		Set<Classifier<?>> classifiers = new HashSet<Classifier<?>>();
+	private static Map<Classifier<?>,Double> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
+		Map<Classifier<?>,Double> ensemble = new HashMap<Classifier<?>,Double>();
 
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
 		for (int i = 0; i < classifierCount; i++) {
@@ -71,20 +75,47 @@ public class Adaboost {
 					}
 					x.configure(props, prefix);
 					x.train(trainingSet);
-					accepted = updateWeights(x,trainingSet);
+					accepted = updateWeights(x,trainingSet, ensemble);
 				}
 			}
 		}
-		return classifiers;
+		return ensemble;
 
 
 	}
 
-	/** Update the weights of trainingSet to reflect the performance of the given classifier, returning whether or not the classifier performs well enough to allow into the ensemble.*/
-	private static boolean updateWeights(Classifier<?> x,
-			Set<Instance<Enum<?>>> trainingSet) {
-		//TODO: Implement
+	/** Consider a classifier for inclusion in the ensemble and updating weights. */
+	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble) {
+		double error = 0;
+		for (Instance<Enum<?>> instance : trainingSet) {
+			if(x.classify(instance) != instance.getClassification()){
+				error += instance.getWeight();
+			}
+			int l = countAttributes(trainingSet);
+			if(error > (((double)l-1d)/(double)l)){
+				jiggleWeights(trainingSet);
+				return false;//Reject this classifier
+			}else if(error > 0){
+				
+			}else if(error == 0){
+				
+			}
+		}
 		return true;		
+	}
+
+	private static void jiggleWeights(Set<Instance<Enum<?>>> trainingSet) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static int countAttributes(Set<Instance<Enum<?>>> trainingSet) {
+		int ret = 0;
+		for (Iterator iterator = trainingSet.iterator().next().getAttributes(); iterator.hasNext();) {
+			iterator.next();
+			ret++;
+		}
+		return ret;
 	}
 
 	/** Non-destructively partition a data set into training and testing sets.
