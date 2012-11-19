@@ -3,7 +3,7 @@ package adaboost.classifiers;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
-import java.util.Properties;
+
 import java.util.Set;
 
 import org.junit.Before;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import adaboost.CSVLoader;
 import adaboost.Instance;
+import adaboost.Properties;
 import adaboost.instance.GlassEnum;
 
 public class NaiveBayesTest {
@@ -23,6 +24,7 @@ public class NaiveBayesTest {
 		props.load(new FileInputStream("properties/test.properties"));
 		instances = CSVLoader.load(props);
 		classifier = new NaiveBayes<GlassEnum>();
+		classifier.configure(props, "adaboost.classifiers.0.");
 	}
 
 	@Test
