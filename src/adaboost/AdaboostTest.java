@@ -46,6 +46,7 @@ public class AdaboostTest {
 	@Test
 	public void testMain(){
 		Adaboost.main(TEST_ARGS);
+		Adaboost.main(new String[]{"properties/testLarge.properties"});
 	}
 	
 	@Test (expected = RuntimeException.class)

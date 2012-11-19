@@ -2,6 +2,8 @@ package adaboost.classifiers;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -16,7 +18,9 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 	/** The probability that an instance of a given class has these particular attributes. */
 	private Map<ValueClassPair,Double> aPosteriori;
 	private Set<Instance<Enum<?>>> trainingSet;
+	private static int binCount;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T classify(Instance<Enum<?>> instance) {
 		if(trainingSet.contains(instance)){
@@ -25,6 +29,7 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void train(Set<Instance<Enum<?>>> trainingSet) {
 		this.trainingSet = trainingSet;
@@ -44,12 +49,32 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 		}
 		aPriori = new EnumMap<T,Double>(temp);
 		//Weighted probability of any attribute value, given a classification.
+		//First: Divide training set into per-class sets.
+		Map<T,Set<Instance<Enum<?>>>> partition = new HashMap<T,Set<Instance<Enum<?>>>>();
+		for (Instance<Enum<?>> instance : trainingSet) {
+			Set<Instance<Enum<?>>> correspondingSet = partition.get(instance.getClassification());
+			if(correspondingSet == null){
+				correspondingSet = new HashSet<Instance<Enum<?>>>();
+				partition.put((T) instance.getClassification(), correspondingSet);
+			}
+			correspondingSet.add(instance);
+			
+		}
+		//Preprocess to identify attribute ranges and create discretization scheme.
 		
+		//For each per-class set, count instances of each discrete attribute value.
+		for (Entry<T, Set<Instance<Enum<?>>>> group : partition.entrySet()) {
+			T classification = group.getKey();
+			
+			for (Instance<Enum<?>> instance : group.getValue()) {
+				
+			}
+		}
 	}
 
 	@Override
 	public void configure(Properties props, String prefix) {
-		
+		binCount = props.getIntProperty(prefix+"bins");
 	}
 	
 	private class ValueClassPair{

@@ -31,6 +31,7 @@ public class CSVLoaderTest {
 		props.put(CSVLoader.DATA_SOURCE_CLASS, NurseryInstance.class.getCanonicalName());
 		instances = CSVLoader.load(props);
 		assertTrue("CSV loaded instance set should be nonempty.", instances.size() > 0);
+		assertEquals(12960,instances.size());
 		expectedWeight = (1d/12960d);
 		for (Instance<GlassEnum> instance : instances) {
 			assertEquals("Freshly loaded instances should be weighted equally.",instance.getWeight(),expectedWeight,DELTA);
