@@ -1,5 +1,7 @@
 package adaboost.classifiers;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -10,7 +12,10 @@ import adaboost.Properties;
 
 /** A classifier that builds a tree of questions about instance attributes to separate classes from one another. */
 public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifier<T> {
+	/** The property for what depth is allowed. If not specified, defaults to -1: as many levels as there are attributes.*/
+	private static final String DEPTH_LIMIT = "depthLimit";
 	private DecisionTree root;
+	private int depthLimit = -1;
 	@Override
 	public T classify(Instance<Enum<?>> instance) {
 		return root.classify(instance);
@@ -19,14 +24,31 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 	@Override
 	public void train(Set<Instance<Enum<?>>> trainingset) {
 		super.preprocess(trainingset);
-		DecisionTree root = new DecisionTree(trainingset);
-
+		int attribute = 0;
+		Set<Integer> attributes = new HashSet<Integer>();
+		for (Iterator<Integer> iterator = getAttributes(trainingset.iterator().next()); iterator.hasNext();) {
+			iterator.next();
+			attributes.add(attribute++);
+		}
+		root = new DecisionTree(trainingset,attributes,0);
 	}
 
 	@Override
 	public void configure(Properties props, String prefix) {
 		super.configure(props, prefix);
-		
+		String depthLim = (String) props.get(prefix + DEPTH_LIMIT);
+		if(depthLim != null){
+			try{
+				int temp = Integer.parseInt(depthLim);
+				if(temp == -1){
+					depthLimit = temp;
+				}else{
+					depthLimit = Math.abs(temp);
+				}
+			}catch(NumberFormatException e){
+				throw new RuntimeException("Bad key for decision tree classifier's depth limit.",e);
+			}
+		}
 	}
 
 	private class DecisionTree{
@@ -47,10 +69,30 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 			}
 		}
 		
-		public DecisionTree(Set<Instance<Enum<?>>> trainingset) {
-			//Attempt to partition set by every attribute.
-			//Calculate entropies of the partitions.
-			//Recursively construct children.
+		public DecisionTree(Set<Instance<Enum<?>>> trainingSet, Set<Integer> attributes, int depth) {
+			//Are we at the depth limit? 
+			if(depth == depthLimit){
+				//If so, we answer with a weighted majority vote of our instances.
+				Map<T,Double> weights = new HashMap<T,Double>();
+				for (Instance<Enum<?>> instance : trainingSet) {
+					Double classificationWeight = weights.get(instance.getClassification());
+					double weight = instance.getWeight() + (classificationWeight == null ? 0 : classificationWeight);
+					weights.put((T) instance.getClassification(), weight);
+				}
+				double max = 0d;
+				T chosen = null;
+				for (Map.Entry<T, Double> entry : weights.entrySet()) {
+					if(max < entry.getValue()){
+						max = entry.getValue();
+						chosen = entry.getKey();
+					}
+				}
+				classification = chosen;
+			}else{				
+				//Attempt to partition set by every attribute available.
+				//Calculate entropies of the partitions.
+				//Recursively construct children.
+			}
 		}
 	}
 	

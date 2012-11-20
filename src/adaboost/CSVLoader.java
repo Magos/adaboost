@@ -40,6 +40,7 @@ public class CSVLoader {
 			instance.initialize(values);
 			ret.add(instance);
 		}
+		reader.close();
 		double weight = 1d / ret.size();
 		for (Instance<T> instance : ret) {
 			instance.setWeight(weight);
