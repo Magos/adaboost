@@ -53,4 +53,13 @@ public class Properties extends java.util.Properties {
 			throw new IllegalArgumentException( "bad value for property " + key + ": " + e );
 		}
 	}
+
+
+	public boolean getBooleanProperty(String key) {
+		String value = super.getProperty( key );
+		if ( value == null )
+			throw new IllegalArgumentException( "no value for " + key );
+		return Boolean.parseBoolean( value );
+
+	}
 }

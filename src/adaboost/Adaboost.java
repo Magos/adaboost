@@ -21,6 +21,7 @@ public class Adaboost {
 	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
+	private static final String LOG_TRAIN_ERRORS = NAMESPACE + "logTrainingErrors";
 	
 	private static double BETA = 1.5d;
 
@@ -98,8 +99,9 @@ public class Adaboost {
 	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
 	private static Map<Classifier<?>,Double> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
 		Map<Classifier<?>,Double> ensemble = new HashMap<Classifier<?>,Double>();
-
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
+		boolean logging = props.getBooleanProperty(LOG_TRAIN_ERRORS);
+
 		for (int i = 0; i < classifierCount; i++) {
 			String prefix = CLASSIFIERS_NS + i + ".";
 			Class<? extends Classifier<?>> classifier = null;
@@ -110,6 +112,7 @@ public class Adaboost {
 				throw new RuntimeException("Unable to load classifier " + className,e);
 			}
 			int count = props.getIntProperty(prefix + COUNT);
+			if(logging) System.out.println("Logging training errors for " + className);
 			for (int j = 0; j < count; j++) {
 				boolean accepted = false;
 				while(!accepted){
@@ -121,7 +124,7 @@ public class Adaboost {
 					}
 					x.configure(props, prefix);
 					x.train(trainingSet);
-					accepted = updateWeights(x,trainingSet, ensemble);
+					accepted = updateWeights(x,trainingSet, ensemble, logging);
 				}
 			}
 		}
@@ -131,7 +134,7 @@ public class Adaboost {
 	}
 
 	/** Consider a classifier for inclusion in the ensemble and update weights. */
-	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble) {
+	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble, boolean log) {
 		double error = 0;
 		for (Instance<Enum<?>> instance : trainingSet) {
 			if(x.classify(instance) != instance.getClassification()){
@@ -156,7 +159,9 @@ public class Adaboost {
 			jiggleWeights(trainingSet);
 			ensemble.put(x, 10 + Math.log(l-1));
 		}
-
+		if(log){
+			System.out.println(error);
+		}
 		return true;		
 	}
 
