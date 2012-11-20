@@ -33,11 +33,10 @@ public class PageInstance extends Instance<PageEnum> {
 	@Override
 	public void initialize(String[] values) {
 		for (int i = 0; i < values.length; i++) {
-			double temp = Double.parseDouble(values[i]);
-			if(temp == (int)temp){
-				this.values[i] = (int) temp;
+			if(i >= 3 && i <= 6){
+				this.values[i] = Double.parseDouble(values[i]);
 			}else{
-				this.values[i] = temp;
+				this.values[i] = Integer.parseInt(values[i]);
 			}
 		}
 		this.classification = PageEnum.fromString(values[values.length-1]);

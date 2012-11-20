@@ -14,7 +14,7 @@ import adaboost.Properties;
 /** A classifier that builds a tree of questions about instance attributes to separate classes from one another. */
 public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifier<T> {
 	/** The property for what depth is allowed. If not specified, defaults to -1: as many levels as there are attributes.*/
-	private static final String DEPTH_LIMIT = "depthLimit";
+	public static final String DEPTH_LIMIT = "depthLimit";
 	private DecisionTree root;
 	private int depthLimit = -1;
 	@Override

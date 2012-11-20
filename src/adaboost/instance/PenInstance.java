@@ -5,7 +5,7 @@ import java.util.Iterator;
 import adaboost.Instance;
 
 public class PenInstance extends Instance<PenEnum>{
-	private Object[] values = new Object[17];
+	private int[] values = new int[17];
 
 	@Override
 	public Iterator<Object> getAttributes() {
@@ -33,12 +33,7 @@ public class PenInstance extends Instance<PenEnum>{
 	@Override
 	public void initialize(String[] values) {
 		for (int i = 0; i < values.length; i++) {
-			double temp = Double.parseDouble(values[i]);
-			if(temp == (int)temp){
-				this.values[i] = (int) temp;
-			}else{
-				this.values[i] = temp;
-			}
+			this.values[i] = Integer.parseInt(values[i]);
 		}
 		this.classification = PenEnum.fromString(values[values.length-1]);
 	}

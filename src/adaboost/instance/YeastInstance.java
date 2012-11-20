@@ -5,7 +5,7 @@ import java.util.Iterator;
 import adaboost.Instance;
 
 public class YeastInstance extends Instance<YeastEnum> {
-	private Object[] values = new Object[9];
+	private double[] values = new double[9];
 
 	@Override
 	public Iterator<Object> getAttributes() {
@@ -33,12 +33,7 @@ public class YeastInstance extends Instance<YeastEnum> {
 	@Override
 	public void initialize(String[] values) {
 		for (int i = 0; i < values.length; i++) {
-			double temp = Double.parseDouble(values[i]);
-			if(temp == (int)temp){
-				this.values[i] = (int) temp;
-			}else{
-				this.values[i] = temp;
-			}
+			this.values[i] = Double.parseDouble(values[i]);
 		}
 		this.classification = YeastEnum.fromString(values[values.length-1]);
 	}

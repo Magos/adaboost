@@ -16,12 +16,12 @@ public class Adaboost {
 	public static final String NAMESPACE = "adaboost.";
 	/** Part of several property keys.*/
 	private static final String COUNT = "count";
-	private static final String CLASSIFIERS_NS = NAMESPACE + "classifiers.";
+	static final String CLASSIFIERS_NS = NAMESPACE + "classifiers.";
 	/** How many different classes of classifiers should this run contain?*/
-	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
+	static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
-	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
-	private static final String LOG_TRAIN_ERRORS = NAMESPACE + "logTrainingErrors";
+	static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
+	static final String LOG_TRAIN_ERRORS = NAMESPACE + "logTrainingErrors";
 	
 	private static double BETA = 1.5d;
 
