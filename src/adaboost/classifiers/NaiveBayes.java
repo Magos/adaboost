@@ -91,7 +91,7 @@ public class NaiveBayes<T extends Enum<T>> extends DiscreteClassifier<T> {
 			observedTs.add(instance.getClassification());
 		}
 		//Preprocess to identify attribute ranges and create discretization scheme.
-		preprocess(trainingSet);
+		super.preprocess(trainingSet);
 		//For each per-class set, count instances of each attribute value and tabulate probabilities.
 
 		for (Entry<T, Set<Instance<Enum<?>>>> group : partition.entrySet()) {

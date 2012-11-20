@@ -10,7 +10,7 @@ import adaboost.Instance;
 import adaboost.Properties;
 
 /** A framework class for classifiers whose algorithms rely on finite, discrete attribute spaces.
- * It presents an alternate view of a dataset where any real-valued attributes are discretized into a configurable number of bins.*/
+ * It presents an alternate view of a dataset where any real-valued attributes are discretized into a configurable number of bins, adding O(n) preprocessing time.*/
 abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 	/** The property used for how many bins this classifier should use on real-valued attributes.*/
 	private static final String BINS = "bins";
