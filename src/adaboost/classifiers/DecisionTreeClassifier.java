@@ -90,9 +90,28 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 				classification = chosen;
 			}else{				
 				//Attempt to partition set by every attribute available.
+				
 				//Calculate entropies of the partitions.
 				//Recursively construct children.
 			}
+		}
+		
+		private double getEntropy(Set<Instance<?>> set){
+			Map<T,Double> weights = new HashMap<T,Double>();
+			double totalWeight = 0;
+			for (Instance<?> instance : set) {
+				Object instanceClass = instance.getClassification();
+				double weight = instance.getWeight() + 
+						(weights.get(instanceClass != null ? weights.get(instanceClass) : 0d ));
+				weights.put((T) instanceClass, weight);
+				totalWeight += instance.getWeight();
+			}
+			double ret = 0;
+			for (Map.Entry<T, Double> entry : weights.entrySet()) {
+				double p = entry.getValue()/totalWeight;
+				ret -= p*(Math.log(p)/Math.log(2));//Log2(x) = log(x)/log(2)
+			}
+			return ret;
 		}
 	}
 	
