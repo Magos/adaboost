@@ -100,7 +100,7 @@ public class Adaboost {
 	private static Map<Classifier<?>,Double> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
 		Map<Classifier<?>,Double> ensemble = new HashMap<Classifier<?>,Double>();
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
-		boolean logging = props.getBooleanProperty(LOG_TRAIN_ERRORS);
+		boolean logging = props.getBooleanProperty(LOG_TRAIN_ERRORS,false);
 
 		for (int i = 0; i < classifierCount; i++) {
 			String prefix = CLASSIFIERS_NS + i + ".";

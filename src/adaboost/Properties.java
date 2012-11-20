@@ -62,4 +62,11 @@ public class Properties extends java.util.Properties {
 		return Boolean.parseBoolean( value );
 
 	}
+	
+	public boolean getBooleanProperty(String key, boolean defaultVal) {
+		String value = super.getProperty( key );
+		if ( value == null ) return defaultVal;
+		return Boolean.parseBoolean( value );
+
+	}
 }
