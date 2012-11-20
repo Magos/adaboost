@@ -129,8 +129,6 @@ public class Adaboost {
 			}
 		}
 		return ensemble;
-
-
 	}
 
 	/** Consider a classifier for inclusion in the ensemble and update weights. */
