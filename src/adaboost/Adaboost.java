@@ -21,19 +21,21 @@ public class Adaboost {
 	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
-	private static final double BETA = 1.5d;
+	private static double BETA = 1.5d;
 
 	public static void main(String[] args) {
+		//Read args
 		if(args.length != 1){
 			throw new RuntimeException("Please give a properties file argument.");
 		}
-
+		//Load properties
 		Properties props = null;
 		try {
 			props = loadProperties(args);
 		} catch (IOException e1) {
 			throw new RuntimeException("Could not read properties file.", e1);
 		}
+		//Load and prepare data set.
 		Set<Instance<Enum<?>>> dataSet = null;
 		try {
 			dataSet = CSVLoader.load(props);
@@ -45,8 +47,44 @@ public class Adaboost {
 		double proportion = props.getDoubleProperty(TEST_SET_PROPORTION);
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
+		//Train classifiers.
 		Map<Classifier<?>,Double> ensemble = adaBoostTraining(props, trainingSet);
+		//Test classifiers.
+		Map<Classifier<?>,Double> performance = testEnsemble(ensemble,testingSet);
+		System.out.println(performance);
+	}
 
+	/** Test the ensemble on the given test set and return its proportion of correct classifications, both on an individual basis and as a whole.
+	 * The performance of the ensemble is indicated by the special key null.*/
+	private static Map<Classifier<?>, Double> testEnsemble(
+			Map<Classifier<?>, Double> ensemble,
+			Set<Instance<Enum<?>>> testingSet) {
+		Map<Classifier<?>,Double> performance = new HashMap<Classifier<?>,Double>();
+		performance.put(null,0d);
+		for (Classifier<?> classifier : ensemble.keySet()) {
+			performance.put(classifier, 0d);
+		}
+		double ensembleTotalWeight = 0;
+		for (Double classifierWeight : ensemble.values()) {
+			ensembleTotalWeight += classifierWeight;
+		}
+		for (Instance<Enum<?>> instance : testingSet) {
+			double correctVote = 0;
+			for (Classifier<?> classifier : ensemble.keySet()) {
+				boolean correct = classifier.classify(instance) == instance.getClassification();
+				if(correct){
+					performance.put(classifier, performance.get(classifier)+1);
+					correctVote += ensemble.get(classifier);
+				}
+			}
+			if(correctVote*2 >= ensembleTotalWeight){//If at least half of the weight of the ensemble voted for this, it was a hit.
+				performance.put(null, performance.get(null) +1);
+			}
+		}
+		for (Map.Entry<Classifier<?>, Double> classifierPerformance : performance.entrySet()) {
+			classifierPerformance.setValue(classifierPerformance.getValue() / testingSet.size());
+		}
+		return performance;
 	}
 
 	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
@@ -115,8 +153,14 @@ public class Adaboost {
 	}
 
 	private static void jiggleWeights(Set<Instance<Enum<?>>> trainingSet) {
-		// TODO Auto-generated method stub
-
+		for (Instance<Enum<?>> instance : trainingSet) {
+			double weight = instance.getWeight();
+			double plusMinus = Math.round(Math.random()-0.5d);
+			assert plusMinus == 1d || plusMinus == -1d;
+			weight = Math.max(0d, weight + (plusMinus*Math.pow(1/trainingSet.size(),BETA)));
+			instance.setWeight(weight);
+		}
+		normalizeWeights(trainingSet);
 	}
 	private static void normalizeWeights(Set<Instance<Enum<?>>> trainingSet) {
 		double totalWeight = 0;
