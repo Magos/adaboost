@@ -35,6 +35,12 @@ public class Adaboost {
 		} catch (IOException e1) {
 			throw new RuntimeException("Could not read properties file.", e1);
 		}
+		Map<Classifier<?>, Double> performance = runTest(props);
+		System.out.println(performance);
+	}
+
+	/** Perform the run described by the properties in props and return the results of testing. */
+	public static Map<Classifier<?>, Double> runTest(Properties props) {
 		//Load and prepare data set.
 		Set<Instance<Enum<?>>> dataSet = null;
 		try {
@@ -51,7 +57,7 @@ public class Adaboost {
 		Map<Classifier<?>,Double> ensemble = adaBoostTraining(props, trainingSet);
 		//Test classifiers.
 		Map<Classifier<?>,Double> performance = testEnsemble(ensemble,testingSet);
-		System.out.println(performance);
+		return performance;
 	}
 
 	/** Test the ensemble on the given test set and return its proportion of correct classifications, both on an individual basis and as a whole.

@@ -55,7 +55,7 @@ public class NaiveBayes<T extends Enum<T>> implements Classifier<T> {
 				double update = probabilities.get(classification);
 				if(aPosteriori.containsKey(vc)){
 					update *= aPosteriori.get(vc);
-				}else{//Assume any non-observed combinations have 0 probability.
+				}else{//Any non-observed combinations have 0 probability.
 					update *= 0;
 				}
 				probabilities.put((T) classification,update);
