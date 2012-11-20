@@ -110,7 +110,7 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 				for (Map.Entry<Integer,Map<Integer,Set<Instance<Enum<?>>>>> partition : partitions.entrySet()) {
 					double partitionEntropy = 0;
 					for (Set<Instance<Enum<?>>> subset : partition.getValue().values()){
-						partitionEntropy += getEntropy(subset)*getWeight(subset);
+						partitionEntropy += (getEntropy(subset) * getWeight(subset) / trainingSetWeight);
 					}
 					if(partitionEntropy < chosenEntropy){
 						chosenEntropy = partitionEntropy;

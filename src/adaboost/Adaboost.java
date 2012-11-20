@@ -140,8 +140,8 @@ public class Adaboost {
 			}
 		}
 		int l = countAttributes(trainingSet);
-		double limit = (l-1d)/l;
-		if(error > limit){
+		double limit = ((l-1d)/l);
+		if(error >= limit){
 			jiggleWeights(trainingSet);
 			return false;//Reject this classifier
 		}else if(error > 0){
