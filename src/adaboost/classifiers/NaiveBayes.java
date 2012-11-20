@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import adaboost.Classifier;
 import adaboost.Instance;
 
+/** A classifier that builds tables of frequencies during training and uses them to find the most probable class of a given instance. */
 public class NaiveBayes<T extends Enum<T>> extends DiscreteClassifier<T> {
 	/** The a priori probability that an unseen instance will belong to a class. */
 	private Map<T,Double> aPriori;

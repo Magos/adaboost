@@ -6,7 +6,8 @@ import adaboost.Classifier;
 import adaboost.Instance;
 import adaboost.Properties;
 
-public class DecisionTree<T extends Enum<T>> implements Classifier<T> {
+/** A classifier that builds a tree of questions about instance attributes to separate classes from one another. */
+public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 
 	@Override
 	public T classify(Instance<Enum<?>> instance) {
@@ -22,8 +23,8 @@ public class DecisionTree<T extends Enum<T>> implements Classifier<T> {
 
 	@Override
 	public void configure(Properties props, String prefix) {
-		// TODO Auto-generated method stub
-
+		super.configure(props, prefix);
+		
 	}
 
 }

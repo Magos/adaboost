@@ -12,6 +12,8 @@ import adaboost.Properties;
 /** A framework class for classifiers whose algorithms rely on finite, discrete attribute spaces.
  * It presents an alternate view of a dataset where any real-valued attributes are discretized into a configurable number of bins.*/
 abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
+	/** The property used for how many bins this classifier should use on real-valued attributes.*/
+	private static final String BINS = "bins";
 	private int binCount;
 	/** Mappers for translating real-valued attributes into ints. */
 	private Map<Integer,Mapper> mappers;
@@ -50,7 +52,7 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 
 	@Override
 	public void configure(Properties props, String prefix) {
-		binCount = Math.abs(props.getIntProperty(prefix+"bins"));
+		binCount = Math.abs(props.getIntProperty(prefix+BINS));
 	}
 	
 	protected Iterator<Integer> getAttributes(final Instance<Enum<?>> instance){

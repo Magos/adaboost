@@ -21,8 +21,10 @@ public class Adaboost {
 	private static final String CLASSIFIERS_COUNT = CLASSIFIERS_NS + COUNT;
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	private static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
+	
 	private static double BETA = 1.5d;
 
+	/** Run a single test, from a properties file.*/
 	public static void main(String[] args) {
 		//Read args
 		if(args.length != 1){
