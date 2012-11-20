@@ -46,7 +46,7 @@ public class Adaboost {
 		proportion = (proportion < 0 ? 0 : (proportion > 1 ? 1 : proportion));
 		partitionDataSet(dataSet, trainingSet, testingSet, proportion);
 		Map<Classifier<?>,Double> ensemble = adaBoostTraining(props, trainingSet);
-		
+
 	}
 
 	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
@@ -84,29 +84,48 @@ public class Adaboost {
 
 	}
 
-	/** Consider a classifier for inclusion in the ensemble and updating weights. */
+	/** Consider a classifier for inclusion in the ensemble and update weights. */
 	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble) {
 		double error = 0;
 		for (Instance<Enum<?>> instance : trainingSet) {
 			if(x.classify(instance) != instance.getClassification()){
 				error += instance.getWeight();
 			}
-			int l = countAttributes(trainingSet);
-			if(error > (((double)l-1d)/(double)l)){
-				jiggleWeights(trainingSet);
-				return false;//Reject this classifier
-			}else if(error > 0){
-				
-			}else if(error == 0){
-				
-			}
 		}
+		int l = countAttributes(trainingSet);
+		double limit = (l-1d)/l;
+		if(error > limit){
+			jiggleWeights(trainingSet);
+			return false;//Reject this classifier
+		}else if(error > 0){
+			for (Instance<Enum<?>> instance : trainingSet) {
+				if(x.classify(instance) != instance.getClassification()){
+					double weight = instance.getWeight() * ((1d-error)/error)*(l-1);
+					instance.setWeight(weight);
+				}
+			}
+			normalizeWeights(trainingSet);
+			ensemble.put(x, Math.log(((1d-error)/error)*(l-1)));
+		}else if(error == 0){
+			jiggleWeights(trainingSet);
+			ensemble.put(x, 10 + Math.log(l-1));
+		}
+
 		return true;		
 	}
 
 	private static void jiggleWeights(Set<Instance<Enum<?>>> trainingSet) {
 		// TODO Auto-generated method stub
-		
+
+	}
+	private static void normalizeWeights(Set<Instance<Enum<?>>> trainingSet) {
+		double totalWeight = 0;
+		for (Instance<Enum<?>> instance : trainingSet) {
+			totalWeight += instance.getWeight();
+		}
+		for (Instance<Enum<?>> instance : trainingSet) {
+			instance.setWeight(instance.getWeight()/totalWeight);
+		}
 	}
 
 	private static int countAttributes(Set<Instance<Enum<?>>> trainingSet) {
