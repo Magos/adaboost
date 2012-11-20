@@ -11,31 +11,35 @@ import org.junit.Test;
 import adaboost.instance.GlassEnum;
 import adaboost.instance.GlassInstance;
 import adaboost.instance.NurseryInstance;
+import adaboost.instance.PageInstance;
+import adaboost.instance.PenInstance;
+import adaboost.instance.YeastInstance;
 
 public class CSVLoaderTest {
 
 	private static final double DELTA = 0.0001d;
+	private static final String[] SOURCES = new String[]{
+		"res/glass.csv", "res/nursery.csv","res/page-blocks.csv","res/pen-digits.csv","res/yeast.csv"
+	};
+	private static final String[] CLASSES = new String[]{
+		GlassInstance.class.getCanonicalName(), NurseryInstance.class.getCanonicalName(), PageInstance.class.getCanonicalName(), PenInstance.class.getCanonicalName(), YeastInstance.class.getCanonicalName()
+	};
 
 	@Test 
 	public void testLoad() throws InstantiationException, IllegalAccessException, IOException {
+		
 		Properties props = new Properties();
-		props.put(CSVLoader.DATA_SOURCE_PROPERTY, "res/glass.csv");
-		props.put(CSVLoader.DATA_SOURCE_CLASS, GlassInstance.class.getCanonicalName());
-		Set<Instance<GlassEnum>> instances = CSVLoader.load(props);
-		assertTrue("CSV loaded instance set should be nonempty.", instances.size() > 0);
-		double expectedWeight = (1d/214d);
-		for (Instance<GlassEnum> instance : instances) {
-			assertEquals("Freshly loaded instances should be weighted equally.",instance.getWeight(),expectedWeight,DELTA);
+		for (int i = 0; i < SOURCES.length; i++) {
+			props.put(CSVLoader.DATA_SOURCE_PROPERTY, SOURCES[i]);
+			props.put(CSVLoader.DATA_SOURCE_CLASS, CLASSES[i]);
+			Set<Instance<Enum<?>>>instances = CSVLoader.load(props);
+			assertTrue("CSV loaded instance set should be nonempty.", instances.size() > 0);
+			double expectedWeight = (1d/instances.size());
+			for (Instance<Enum<?>> instance : instances) {
+				assertEquals("Freshly loaded instances should be weighted equally.",instance.getWeight(),expectedWeight,DELTA);
+			}
 		}
-		props.put(CSVLoader.DATA_SOURCE_PROPERTY, "res/nursery.csv");
-		props.put(CSVLoader.DATA_SOURCE_CLASS, NurseryInstance.class.getCanonicalName());
-		instances = CSVLoader.load(props);
-		assertTrue("CSV loaded instance set should be nonempty.", instances.size() > 0);
-		assertEquals(12960,instances.size());
-		expectedWeight = (1d/12960d);
-		for (Instance<GlassEnum> instance : instances) {
-			assertEquals("Freshly loaded instances should be weighted equally.",instance.getWeight(),expectedWeight,DELTA);
-		}
+		
 	}
 	
 	@Test (expected = RuntimeException.class)

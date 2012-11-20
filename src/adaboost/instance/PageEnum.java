@@ -1,9 +1,9 @@
 package adaboost.instance;
 
-public enum NurseryEnum {
-	Zero, One, Two, Three, Four;
+public enum PageEnum {
+	Zero, One, Two, Three, Four,Five;
 
-	public static NurseryEnum fromString(String s){
+	public static PageEnum fromString(String s){
 		switch(s){
 		case "0":
 			return Zero;
@@ -15,6 +15,8 @@ public enum NurseryEnum {
 			return Three;
 		case "4":
 			return Four;
+		case "5":
+			return Five;
 		default:
 			return valueOf(s);
 		}

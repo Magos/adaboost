@@ -78,7 +78,7 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 		public DecisionTree(Set<Instance<Enum<?>>> trainingSet, Set<Integer> attributes, int depth) {
 			double trainingSetWeight = getWeight(trainingSet);
 			//Are we at the depth limit? 
-			if(depth == depthLimit){
+			if(depth == depthLimit || attributes.isEmpty()){
 				//If so, we answer with a weighted majority vote of our instances.
 				Map<T,Double> weights = new HashMap<T,Double>();
 				for (Instance<Enum<?>> instance : trainingSet) {
@@ -121,7 +121,7 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 				children = new HashMap<Integer, DecisionTree>();
 				for (Entry<Integer, Set<Instance<Enum<?>>>>  partition : partitions.get(chosen).entrySet()) {
 					Set<Integer> newFeatures = new HashSet<Integer>(attributes);
-					newFeatures.remove(partition.getKey());
+					newFeatures.remove(chosen);
 					DecisionTree child = new DecisionTree(partition.getValue(), newFeatures, depth+1);
 					children.put(partition.getKey(), child);
 				}
