@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import adaboost.Classifier;
 import adaboost.Instance;
 import adaboost.Properties;
 
@@ -52,13 +51,14 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 		}
 	}
 
-	private class DecisionTree{
+	class DecisionTree{
 		private int attributePosition;
 		private T classification;
+		private boolean isUnknown = false;
 		private Map<Integer,DecisionTree> children;
-		
+
 		public T classify(Instance<Enum<?>> instance){
-			if(classification != null){
+			if(classification != null || isUnknown){
 				return classification;
 			}else{
 				int position = 0;
@@ -74,9 +74,13 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 				}
 			}
 		}
-		
+
 		public DecisionTree(Set<Instance<Enum<?>>> trainingSet, Set<Integer> attributes, int depth) {
 			double trainingSetWeight = getWeight(trainingSet);
+			if(trainingSet == null || trainingSet.isEmpty()){
+				this.classification = null;
+				this.isUnknown = true;
+			}
 			//Are we at the depth limit? 
 			if(depth == depthLimit || attributes.isEmpty()){
 				//If so, we answer with a weighted majority vote of our instances.
@@ -107,27 +111,38 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 				//Calculate entropy changes of the partitions.
 				int chosen = -1;
 				double chosenEntropy = Double.POSITIVE_INFINITY;
+				Map<Integer,Double> entropies = new HashMap<Integer,Double>();
 				for (Map.Entry<Integer,Map<Integer,Set<Instance<Enum<?>>>>> partition : partitions.entrySet()) {
 					double partitionEntropy = 0;
 					for (Set<Instance<Enum<?>>> subset : partition.getValue().values()){
-						partitionEntropy += (getEntropy(subset) * getWeight(subset) / trainingSetWeight);
+						double setEntropy = getEntropy(subset);
+						double weightFactor = getWeight(subset)/trainingSetWeight;
+						partitionEntropy += (setEntropy * weightFactor);
 					}
+					entropies.put(partition.getKey(),partitionEntropy);
 					if(partitionEntropy < chosenEntropy){
 						chosenEntropy = partitionEntropy;
 						chosen = partition.getKey();
 					}
 				}
+				assert (chosen > -1);
+				if(chosen == -1){
+//					System.out.println("Chosen was -1! There were " + entropies );
+					chosen = attributes.iterator().next();
+				}
 				//Recursively construct children.
 				children = new HashMap<Integer, DecisionTree>();
-				for (Entry<Integer, Set<Instance<Enum<?>>>>  partition : partitions.get(chosen).entrySet()) {
-					Set<Integer> newFeatures = new HashSet<Integer>(attributes);
-					newFeatures.remove(chosen);
-					DecisionTree child = new DecisionTree(partition.getValue(), newFeatures, depth+1);
+				Map<Integer, Set<Instance<Enum<?>>>> chosenPartition = partitions.get(chosen);
+				Set<Map.Entry<Integer, Set<Instance<Enum<?>>>>> entrySet = chosenPartition.entrySet();
+				for (Entry<Integer, Set<Instance<Enum<?>>>>  partition : entrySet) {
+					Set<Integer> newAttributes = new HashSet<Integer>(attributes);
+					newAttributes.remove(chosen);
+					DecisionTree child = new DecisionTree(partition.getValue(), newAttributes, depth+1);
 					children.put(partition.getKey(), child);
 				}
 			}
 		}
-		
+
 		private double getWeight(Set<Instance<Enum<?>>> subset) {
 			double ret = 0;
 			for (Instance<Enum<?>> instance : subset) {
@@ -164,22 +179,22 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 		}
 
 		private double getEntropy(Set<Instance<Enum<?>>> trainingSet){
-			Map<T,Double> weights = new HashMap<T,Double>();
-			double totalWeight = 0;
+			Map<T,Integer> counts = new HashMap<T,Integer>();
 			for (Instance<?> instance : trainingSet) {
-				Object instanceClass = instance.getClassification();
-				double weight = (weights.get(instanceClass) != null ? weights.get(instanceClass) : 0d) ;
-				weight += instance.getWeight();
-				weights.put((T) instanceClass, weight);
-				totalWeight += instance.getWeight();
+				T instanceClass = (T) instance.getClassification();
+				Integer count = counts.get(instanceClass);
+				if(count == null){
+					count = new Integer(0);
+				}
+				counts.put(instanceClass, count+1);
 			}
 			double ret = 0;
-			for (Map.Entry<T, Double> entry : weights.entrySet()) {
-				double p = entry.getValue()/totalWeight;
+			for (Map.Entry<T, Integer> entry : counts.entrySet()) {
+				double p = (((double)entry.getValue()) / trainingSet.size());
 				ret -= p*(Math.log(p)/Math.log(2));//Log2(x) = log(x)/log(2)
 			}
 			return ret;
 		}
 	}
-	
+
 }

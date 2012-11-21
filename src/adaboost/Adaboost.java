@@ -22,6 +22,7 @@ public class Adaboost {
 	/** What proportion of the data set should be used for testing? (Real value between 0 and 1)*/
 	static final String TEST_SET_PROPORTION = NAMESPACE + "testSetProportion";
 	static final String LOG_TRAIN_ERRORS = NAMESPACE + "logTrainingErrors";
+	static final String KEEP_LOSERS = NAMESPACE + "keepLosers";
 	
 	private static double BETA = 1.5d;
 
@@ -124,7 +125,7 @@ public class Adaboost {
 					}
 					x.configure(props, prefix);
 					x.train(trainingSet);
-					accepted = updateWeights(x,trainingSet, ensemble, logging);
+					accepted = updateWeights(x,trainingSet, ensemble, props);
 				}
 			}
 		}
@@ -132,7 +133,9 @@ public class Adaboost {
 	}
 
 	/** Consider a classifier for inclusion in the ensemble and update weights. */
-	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble, boolean log) {
+	private static boolean updateWeights(Classifier<?> x, Set<Instance<Enum<?>>> trainingSet, Map<Classifier<?>,Double> ensemble, Properties props) {
+		boolean log = props.getBooleanProperty(LOG_TRAIN_ERRORS, false);
+		boolean keepLosers = props.getBooleanProperty(KEEP_LOSERS,false);
 		double error = 0;
 		for (Instance<Enum<?>> instance : trainingSet) {
 			if(x.classify(instance) != instance.getClassification()){
@@ -141,18 +144,18 @@ public class Adaboost {
 		}
 		int l = countAttributes(trainingSet);
 		double limit = ((l-1d)/l);
-		if(error >= limit){
-			jiggleWeights(trainingSet);
-			return false;//Reject this classifier
-		}else if(error > 0){
+		if(keepLosers || (error > 0 && error <= limit)){
 			for (Instance<Enum<?>> instance : trainingSet) {
 				if(x.classify(instance) != instance.getClassification()){
-					double weight = instance.getWeight() * ((1d-error)/error)*(l-1);
+					double weight = instance.getWeight() * ((1d-error)/(error))*(l-1d);
 					instance.setWeight(weight);
 				}
 			}
 			normalizeWeights(trainingSet);
 			ensemble.put(x, Math.log(((1d-error)/error)*(l-1)));
+		}else if(error >= limit){
+			jiggleWeights(trainingSet);
+			return false;//Reject this classifier
 		}else if(error == 0){
 			jiggleWeights(trainingSet);
 			ensemble.put(x, 10 + Math.log(l-1));
