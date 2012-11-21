@@ -16,6 +16,7 @@ public class DecisionTreeClassifier<T extends Enum<T>> extends DiscreteClassifie
 	public static final String DEPTH_LIMIT = "depthLimit";
 	private DecisionTree root;
 	private int depthLimit = -1;
+	
 	@Override
 	public T classify(Instance<Enum<?>> instance) {
 		return root.classify(instance);

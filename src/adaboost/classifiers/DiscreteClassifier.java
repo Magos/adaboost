@@ -16,7 +16,7 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 	private static final String BINS = "bins";
 	private int binCount;
 	/** Mappers for translating real-valued attributes into ints. */
-	private Map<Integer,Mapper> mappers;
+	protected Map<Integer,Mapper> mappers;
 
 	protected DiscreteClassifier() {
 		super();
@@ -72,7 +72,8 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 				if(next instanceof Integer){
 					return (int) next;
 				}else if(next instanceof Double){
-					return mappers.get(i).map((double) next);
+					Mapper mapper = mappers.get(i);
+					return mapper.map((double) next);
 				}
 				return null;
 			}
@@ -85,7 +86,7 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 	}
 
 	/** A support class for discretizing real-valued attributes. */
-	private class Mapper{
+	protected class Mapper{
 		double max, min;
 
 		Mapper(double max, double min){

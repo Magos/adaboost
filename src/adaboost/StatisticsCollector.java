@@ -2,6 +2,7 @@ package adaboost;
 
 import java.util.Map;
 
+import adaboost.classifiers.DecisionTree;
 import adaboost.classifiers.DecisionTreeClassifier;
 import adaboost.classifiers.NaiveBayes;
 import adaboost.instance.GlassInstance;
@@ -32,9 +33,10 @@ public class StatisticsCollector {
 			props.put(Adaboost.CLASSIFIERS_COUNT, "2");
 			props.put(Adaboost.CLASSIFIERS_NS + "0.class", NaiveBayes.class.getCanonicalName());
 			props.put(Adaboost.CLASSIFIERS_NS + "0.bins", "10");
-			props.put(Adaboost.CLASSIFIERS_NS + "1.class", DecisionTreeClassifier.class.getCanonicalName());
+			props.put(Adaboost.CLASSIFIERS_NS + "1.class", DecisionTree.class.getCanonicalName());
 			props.put(Adaboost.CLASSIFIERS_NS + "1.bins", "10");
-			props.put(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT, "-1");
+			String depthLimit = Adaboost.CLASSIFIERS_NS + "1." + DecisionTree.DEPTH_LIMIT;
+			props.put(depthLimit, "-1");
 			props.put(CSVLoader.DATA_SOURCE_PROPERTY, dataSets[i]);
 			props.put(CSVLoader.DATA_SOURCE_CLASS, classes[i]);
 			
@@ -44,14 +46,14 @@ public class StatisticsCollector {
 			performTest(10, 0, props);
 			performTest(20, 0, props);
 			performTest(0, 5, props);
-			props.put(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT, "1");
+			props.put(depthLimit, "1");
 			performTest(0, 10, props);
-			props.put(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT, "2");
+			props.put(depthLimit, "2");
 			performTest(0, 10, props);
-			props.put(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT, "-1");
+			props.put(depthLimit, "-1");
 			performTest(0, 10, props);
 			performTest(0, 20, props);
-			props.put(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT, "2");
+			props.put(depthLimit, "2");
 			performTest(5, 5, props);
 			performTest(10, 10, props);
 			performTest(20, 20, props);
