@@ -6,10 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import adaboost.Adaboost;
 import adaboost.Instance;
 import adaboost.Properties;
-import adaboost.classifiers.DiscreteClassifier.Mapper;
 
 public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 	/** The property for what depth is allowed. If not specified, defaults to -1: as many levels as there are attributes.*/
@@ -40,6 +38,7 @@ public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public T getBiggestClassification(Set<Instance<Enum<?>>> value) {
 		Map<T,Double> map = new HashMap<T,Double>();
 		for (Instance<Enum<?>> instance : value) {
@@ -172,6 +171,7 @@ public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 		return it.next();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public double getEntropy(Set<Instance<Enum<?>>> trainingSet){
 		Map<T,Integer> counts = new HashMap<T,Integer>();
 		for (Instance<?> instance : trainingSet) {

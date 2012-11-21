@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import adaboost.instance.GlassEnum;
 import adaboost.instance.GlassInstance;
 import adaboost.instance.NurseryInstance;
 import adaboost.instance.PageInstance;

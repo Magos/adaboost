@@ -3,7 +3,6 @@ package adaboost;
 import java.util.Map;
 
 import adaboost.classifiers.DecisionTree;
-import adaboost.classifiers.DecisionTreeClassifier;
 import adaboost.classifiers.NaiveBayes;
 import adaboost.instance.GlassInstance;
 import adaboost.instance.NurseryInstance;
@@ -28,7 +27,7 @@ public class StatisticsCollector {
 			System.out.println("Collecting for data set: " + dataSets[i]);
 			Properties props = new Properties();
 			props.put(Adaboost.LOG_TRAIN_ERRORS, "true");
-			props.put(Adaboost.KEEP_LOSERS,"true");
+			props.put(Adaboost.KEEP_LOSERS,"false");
 			props.put(Adaboost.TEST_SET_PROPORTION,"0.2");
 			props.put(Adaboost.CLASSIFIERS_COUNT, "2");
 			props.put(Adaboost.CLASSIFIERS_NS + "0.class", NaiveBayes.class.getCanonicalName());
@@ -63,7 +62,7 @@ public class StatisticsCollector {
 	private static void performTest(int i, int j, Properties props) {
 		props.put(Adaboost.CLASSIFIERS_NS + "0.count", Integer.toString(i));
 		props.put(Adaboost.CLASSIFIERS_NS + "1.count", Integer.toString(j));
-		System.out.println("Trial with " + i + " NBCs, " + j + " DTCs with depth limit " + props.getIntProperty(Adaboost.CLASSIFIERS_NS + "1." + DecisionTreeClassifier.DEPTH_LIMIT));
+		System.out.println("Trial with " + i + " NBCs, " + j + " DTCs with depth limit " + props.getIntProperty(Adaboost.CLASSIFIERS_NS + "1." + DecisionTree.DEPTH_LIMIT));
 		Map<Classifier<?>,Double> result = Adaboost.runTest(props);
 		System.out.println("Ensemble performance was " + result.get(null));
 	}
