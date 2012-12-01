@@ -14,6 +14,7 @@ public class CSVLoader {
 	public static final String DATA_SOURCE_PROPERTY = Adaboost.NAMESPACE + "dataSource";
 	public static final String DATA_SOURCE_CLASS = Adaboost.NAMESPACE + "dataClass";
 
+	@SuppressWarnings("unchecked")
 	public static <T extends Enum<?>> Set<Instance<T>> load(Properties props) throws IOException, InstantiationException, IllegalAccessException{
 		//Check existence and readability of data source
 		String location = props.getProperty(DATA_SOURCE_PROPERTY);

@@ -22,7 +22,8 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 		super();
 	}
 	
-	protected DiscreteClassifier(DiscreteClassifier parent){
+	/** Copy constructor to allow prepared mapping to be re-used e.g. by tree-based subclasses that need many classifier objects.*/
+	protected DiscreteClassifier(DiscreteClassifier<T> parent){
 		this.mappers = parent.mappers;
 	}
 

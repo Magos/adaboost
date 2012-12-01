@@ -98,6 +98,7 @@ public class Adaboost {
 	}
 
 	/** The adaboost algorithm itself, producing the ensemble described in properties using the training set provided.*/
+	@SuppressWarnings("unchecked")
 	private static Map<Classifier<?>,Double> adaBoostTraining(Properties props, Set<Instance<Enum<?>>> trainingSet) {
 		Map<Classifier<?>,Double> ensemble = new HashMap<Classifier<?>,Double>();
 		int classifierCount = props.getIntProperty(CLASSIFIERS_COUNT);
@@ -188,7 +189,7 @@ public class Adaboost {
 
 	private static int countAttributes(Set<Instance<Enum<?>>> trainingSet) {
 		int ret = 0;
-		for (Iterator iterator = trainingSet.iterator().next().getAttributes(); iterator.hasNext();) {
+		for (Iterator<Object> iterator = trainingSet.iterator().next().getAttributes(); iterator.hasNext();) {
 			iterator.next();
 			ret++;
 		}
