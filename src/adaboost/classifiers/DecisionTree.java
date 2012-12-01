@@ -27,14 +27,14 @@ public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 		
 	}
 	
-	protected DecisionTree(Set<Instance<Enum<?>>> value, Set<Integer> newAttributes, int i, final Map<Integer,Mapper> mappers) {
+	protected DecisionTree(Set<Instance<Enum<?>>> value, Set<Integer> attributes, int i, DiscreteClassifier<T> parent) {
+		super(parent);
 		this.height = i;
-		this.mappers = mappers;
-		if(i == 0 || newAttributes.size() == 0 || getEntropy(value) == 0d){
+		if(i == 0 || attributes.size() == 0 || getEntropy(value) == 0d){
 			leaf = true;
 			classification = getBiggestClassification(value);
 		}else{
-			buildSubtree(value,newAttributes);
+			buildSubtree(value,attributes);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class DecisionTree<T extends Enum<T>> extends DiscreteClassifier<T> {
 		children = new HashMap<Integer,DecisionTree<T>>();
 		for (Map.Entry<Integer, Set<Instance<Enum<?>>>> partitionSet : partitionMap.get(bestChoice).entrySet()) {
 			Set<Instance<Enum<?>>> instanceSet = partitionSet.getValue();
-			DecisionTree<T> child = new DecisionTree<T>(instanceSet,newAttributes,height-1,mappers);
+			DecisionTree<T> child = new DecisionTree<T>(instanceSet,newAttributes,height-1,this);
 			children.put(partitionSet.getKey(), child);
 		}
 	}

@@ -16,10 +16,14 @@ abstract class DiscreteClassifier<T extends Enum<T>> implements Classifier<T> {
 	private static final String BINS = "bins";
 	private int binCount;
 	/** Mappers for translating real-valued attributes into ints. */
-	protected Map<Integer,Mapper> mappers;
+	private Map<Integer,Mapper> mappers;
 
 	protected DiscreteClassifier() {
 		super();
+	}
+	
+	protected DiscreteClassifier(DiscreteClassifier parent){
+		this.mappers = parent.mappers;
 	}
 
 	/** Preprocess a training set to create mappers that discretize any real-valued attributes. */
